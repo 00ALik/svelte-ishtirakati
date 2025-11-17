@@ -838,7 +838,7 @@ svelte-check@^4.3.3:
 
 svelte-spa-router@^4.0.1:
   version "4.0.1"
-  resolved "https://registry.npmjs.org/svelte-spa-router/-/svelte-spa-router-4.0.1.tgz"
+  resolved "https://registry.yarnpkg.com/svelte-spa-router/-/svelte-spa-router-4.0.1.tgz#720ef0cc9a4af33b155812496545c7999483878c"
   integrity sha512-2JkmUQ2f9jRluijL58LtdQBIpynSbem2eBGp4zXdi7aDY1znbR6yjw0KsonD0aq2QLwf4Yx4tBJQjxIjgjXHKg==
   dependencies:
     regexparam "2.0.2"

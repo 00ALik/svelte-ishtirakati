@@ -1,83 +1,28 @@
 <script lang="ts">
+  import { Cog, Wifi, Router } from "lucide-svelte";
+  import type { Subscription, Invoice } from "../data/subscriptions";
+  import {
+    initialSubscriptions,
+    pendingSubscriptionData,
+    lastInvoices as lastInvoicesData,
+  } from "../data/subscriptions";
+  import { push } from "svelte-spa-router";
 
-    import { Cog, Wifi, Router } from "lucide-svelte";
-
-function getIcon(type: string) {
-  if (type.includes("مولد")) return Cog;
-  if (type.includes("المولد")) return Cog;
-  if (type.includes("إنترنت")) return Wifi;
-  return Router;
-}
-  type Subscription = {
-    id: number;
-    type: string;
-    serviceType: string;
-    provider: string;
-    price: string;
-    count?: number;
-    boardNo?: number;
-    lineNo?: number;
-  };
+  function getIcon(type: string) {
+    if (type.includes("مولد")) return Cog;
+    if (type.includes("المولد")) return Cog;
+    if (type.includes("إنترنت")) return Wifi;
+    return Router;
+  }
 
   // الاشتراكات الحالية
-  let subscriptions: Subscription[] = [
-    {
-      id: 1,
-      type: "المولد",
-      serviceType: "ذهبي",
-      provider: "محمد عبد الكريم",
-      price: "150 د.ع"
-    },
-    {
-      id: 2,
-      type: "الإنترنت",
-      serviceType: "ذهبي",
-      provider: "جبار حسن علي",
-      price: "150 د.ع"
-    }
-  ];
+  let subscriptions: Subscription[] = [...initialSubscriptions];
 
   // اشتراك معلّق بانتظار القبول
-  let pendingSubscription: Subscription | null = {
-    id: 3,
-    type: "المولد",
-    serviceType: "ذهبي",
-    provider: "المولد جبار علي حسين",
-    price: "65 د.ع",
-    count: 8,
-    boardNo: 46,
-    lineNo: 421
-  };
+  let pendingSubscription: Subscription | null = pendingSubscriptionData;
 
-  // آخر الفواتير (نفس السابق)
-  const lastInvoices = [
-    {
-      id: 1,
-      type: "مولدة",
-      status: "غير مدفوع",
-      statusColor: "bg-red-600",
-      iconBg: "bg-yellow-50",
-      iconBorder: "border-yellow-300",
-      price: "150 د.ع",
-      count: 10,
-      boardNo: 6,
-      lineNo: 421,
-      primary: true
-    },
-    {
-      id: 2,
-      type: "مولدة",
-      status: "مدفوع",
-      statusColor: "bg-green-600",
-      iconBg: "bg-green-50",
-      iconBorder: "border-green-300",
-      price: "150 د.ع",
-      count: 10,
-      boardNo: 6,
-      lineNo: 421,
-      primary: false
-    }
-  ];
+  // آخر الفواتير
+  const lastInvoices: Invoice[] = lastInvoicesData;
 
   function acceptPending() {
     if (!pendingSubscription) return;
@@ -89,7 +34,6 @@ function getIcon(type: string) {
 
   function rejectPending() {
     pendingSubscription = null;
-
   }
 </script>
 
@@ -118,7 +62,8 @@ function getIcon(type: string) {
           <p class="text-[13px] text-slate-700 leading-relaxed">
             تمت إضافتك إلى مزود الخدمة
             <span class="font-semibold text-slate-900">
-              ({pendingSubscription.type} {pendingSubscription.provider})
+              ({pendingSubscription.type}
+              {pendingSubscription.provider})
             </span>
           </p>
 
@@ -142,15 +87,15 @@ function getIcon(type: string) {
             class="mt-3 bg-[#FFFDF5] rounded-2xl border border-yellow-200 px-4 py-3 flex flex-col gap-3"
           >
             <div class="flex items-start gap-3">
-   <div
-  class="mt-1 w-10 h-10 rounded-xl flex items-center justify-center border bg-yellow-50 border-yellow-200"
->
-  <svelte:component
-    this={getIcon(pendingSubscription.type)}
-    size={20}
-    class="text-yellow-700"
-  />
-</div>
+              <div
+                class="mt-1 w-10 h-10 rounded-xl flex items-center justify-center border bg-yellow-50 border-yellow-200"
+              >
+                <svelte:component
+                  this={getIcon(pendingSubscription.type)}
+                  size={20}
+                  class="text-yellow-700"
+                />
+              </div>
 
               <div class="flex-1 space-y-1 text-xs">
                 <div class="flex justify-between">
@@ -199,15 +144,15 @@ function getIcon(type: string) {
           class="bg-white rounded-2xl shadow-sm border border-slate-100 px-4 py-3 flex flex-col gap-3"
         >
           <div class="flex items-start gap-3">
-        <div
-  class="mt-1 w-10 h-10 rounded-xl flex items-center justify-center border bg-yellow-50 border-yellow-200"
->
-  <svelte:component
-    this={getIcon(sub.type)}
-    size={20}
-    class="text-yellow-700"
-  />
-</div>
+            <div
+              class="mt-1 w-10 h-10 rounded-xl flex items-center justify-center border bg-yellow-50 border-yellow-200"
+            >
+              <svelte:component
+                this={getIcon(sub.type)}
+                size={20}
+                class="text-yellow-700"
+              />
+            </div>
 
             <div class="flex-1 space-y-1 text-xs">
               <div class="flex justify-between">
@@ -236,6 +181,7 @@ function getIcon(type: string) {
 
           <button
             class="self-start text-[13px] font-semibold text-sky-800"
+            on:click={() => push(`/details/${sub.id}`)}
           >
             عرض التفاصيل
           </button>
@@ -260,15 +206,15 @@ function getIcon(type: string) {
 
           <div class="px-4 py-3 space-y-2 text-xs">
             <div class="flex items-start gap-3">
-           <div
-  class="mt-1 w-10 h-10 rounded-xl flex items-center justify-center border bg-yellow-50 border-yellow-200"
->
-  <svelte:component
-    this={getIcon(inv.type)}
-    size={20}
-    class="text-yellow-700"
-  />
-</div>
+              <div
+                class="mt-1 w-10 h-10 rounded-xl flex items-center justify-center border bg-yellow-50 border-yellow-200"
+              >
+                <svelte:component
+                  this={getIcon(inv.type)}
+                  size={20}
+                  class="text-yellow-700"
+                />
+              </div>
 
               <div class="flex-1 space-y-1">
                 <div class="flex justify-between">
@@ -285,7 +231,8 @@ function getIcon(type: string) {
                 </div>
                 <div class="flex justify-between">
                   <span class="text-slate-500">رقم البورد</span>
-                  <span class="font-semibold text-slate-900">{inv.boardNo}</span>
+                  <span class="font-semibold text-slate-900">{inv.boardNo}</span
+                  >
                 </div>
                 <div class="flex justify-between">
                   <span class="text-slate-500">رقم الجورة</span>
@@ -305,6 +252,5 @@ function getIcon(type: string) {
         </article>
       {/each}
     </section>
-
   </div>
 </main>
